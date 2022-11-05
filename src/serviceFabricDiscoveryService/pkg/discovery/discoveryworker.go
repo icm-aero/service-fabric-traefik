@@ -44,7 +44,7 @@ type Config struct {
 // CreateConfig creates the default plugin configuration.
 func CreateConfig() *Config {
 	return &Config{
-		PollInterval:   "5s",
+		PollInterval:   "1s",
 		HttpEntrypoint: "web",
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"math/rand"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -60,7 +61,7 @@ func (disco *DiscoveryService) Close() {
 	disco.cancel()
 }
 
-//Subscribe subscribes to route data
+// Subscribe subscribes to route data
 func (disco *DiscoveryService) Subscribe(clientName string) chan []byte {
 	disco.mtx.Lock()
 	defer disco.mtx.Unlock()
@@ -72,7 +73,7 @@ func (disco *DiscoveryService) Subscribe(clientName string) chan []byte {
 	return clientChan
 }
 
-//Unsubscribe unsubscribes from route data
+// Unsubscribe unsubscribes from route data
 func (disco *DiscoveryService) Unsubscribe(clientName string) {
 	disco.mtx.Lock()
 	defer disco.mtx.Unlock()
@@ -97,6 +98,11 @@ loop:
 				if err != nil {
 					log.Errorf("Failed to write file location: [%s]", disco.publishFilePath)
 				}
+
+				currentTime := time.Now().Format("2006-01-02_15-04-05")
+				debugFilePath := strings.ReplaceAll(disco.publishFilePath, ".yaml", "") + currentTime + ".bak"
+
+				os.WriteFile(debugFilePath, data, 0644)
 			}
 
 			disco.mtx.Lock()
@@ -105,7 +111,7 @@ loop:
 				ch <- data
 			}
 			disco.mtx.Unlock()
-		case <-time.After(5 * time.Second):
+		case <-time.After(1 * time.Second):
 		case <-ctx.Done():
 			break loop
 		}
