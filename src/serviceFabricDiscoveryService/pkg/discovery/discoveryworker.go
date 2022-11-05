@@ -287,10 +287,17 @@ func getReplicaDefaultEndpoint(replicaData *sf.ReplicaItemBase) (string, error) 
 		return "", err
 	}
 
+	var endpointNames []string
+	for endpointName := range endpoints {
+		endpointNames = append(endpointNames, endpointName)
+	}
+	sort.Strings(endpointNames)
+
 	var defaultHTTPEndpoint string
-	for _, v := range endpoints {
-		if strings.Contains(v, "http") {
-			defaultHTTPEndpoint = v
+	for _, v := range endpointNames {
+		var selectedEndpoint string = endpoints[v]
+		if strings.Contains(selectedEndpoint, "http") {
+			defaultHTTPEndpoint = selectedEndpoint
 			break
 		}
 	}
